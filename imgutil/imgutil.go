@@ -3,6 +3,7 @@ package imgutil
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"image"
 	"image/color"
 	"image/draw"
@@ -10,22 +11,28 @@ import (
 	"image/png"
 	"net/http"
 	"os"
+
+	"golang.org/x/image/webp"
 )
 
-// Jpeg jpeg mime type
-const Jpeg = "image/jpeg"
-
-// Png png mime type
-const Png = "image/png"
+// Supported mime types
+const (
+	Jpeg = "image/jpeg"
+	Png  = "image/png"
+	Webp = "image/webp"
+)
 
 // Decode decodes the byte array to an image
 func Decode(data []byte) (image.Image, error) {
 	contentType := http.DetectContentType(data)
+	fmt.Println("content type: " + contentType)
 	switch contentType {
 	case Jpeg:
 		return jpeg.Decode(bytes.NewReader(data))
 	case Png:
 		return png.Decode(bytes.NewReader(data))
+	case Webp:
+		return webp.Decode(bytes.NewReader(data))
 	default:
 		return nil, errors.New("Unsuported image type '" + contentType + "'")
 	}
